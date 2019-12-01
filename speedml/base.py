@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 class Base(object):
     def __init__(self, train=None, test=None, target=None, uid=None):
+        from . import Speedml
         if test is None and target is None and isinstance(train,Speedml):
             train = train.train
             test  = train.test
