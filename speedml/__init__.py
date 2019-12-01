@@ -249,3 +249,19 @@ class Speedml(Base):
             self.xgb.sample_accuracy,
             self.xgb.feature_accuracy)
         return performance_slug
+      
+    @property
+    def feature(self): 
+        return Feature(self)
+      
+    @property
+    def plot(self): 
+        return Plot(self)
+     
+    @property
+    def model(self): 
+        return Model(self)
+      
+    @property
+    def xgb(self):
+        return Xgb(self)
