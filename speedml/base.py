@@ -22,10 +22,6 @@ class Base(object):
             if uid:
                 Base.uid = Base.test.pop(uid)
                 Base.train = Base.train.drop([uid], axis=1)
-            self.plot = Plot()
-            self.feature = Feature()
-            self.xgb = Xgb()
-            self.model = Model()
 
             self.np = np
             self.pd = pd
