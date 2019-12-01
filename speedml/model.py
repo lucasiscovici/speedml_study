@@ -28,6 +28,7 @@ class Model(Base):
         """
         Prepare model input data ``Base.train_y`` as Series, ``Base.train_X``, and ``Base.test_X`` datasets as Matrix.
         """
+        Base = self
         Base.train_y = Base.train[Base.target]
         Base.train_X = Base.train.drop([Base.target], axis=1).as_matrix()
         Base.test_X = Base.test.as_matrix()
@@ -40,6 +41,7 @@ class Model(Base):
         """
         Model evaluation across multiple classifiers based on accuracy of predictions.
         """
+        Base = self
         classifiers = [
             xgb.XGBClassifier(**Base.xgb_params),
             KNeighborsClassifier(3),
@@ -85,5 +87,6 @@ class Model(Base):
         """
         Returns DataFrame of model ranking sorted by Accuracy.
         """
+        Base = self
         self.xgb_accuracy = Base.model_ranking[Base.model_ranking['Classifier'] == 'XGBClassifier']['Accuracy'][0]
         return Base.model_ranking.sort_values(by='Accuracy', ascending=False)
