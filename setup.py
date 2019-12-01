@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(
-    name='speedml',
+    name='speedml_study',
     version='0.9.3',
     description='Speedml Machine Learning Speed Start',
     long_description=long_description,
@@ -19,7 +19,7 @@ setup(
     author_email='new@speedml.com',
     license='MIT',
     keywords='machine-learning data-science jupyter-notebook',
-    packages=['speedml'],
+    packages=['speedml_study'],
     install_requires=[
       'pandas', 'numpy', 'seaborn', 'matplotlib',
       'sklearn', 'xgboost', 'future'
