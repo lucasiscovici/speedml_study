@@ -24,12 +24,14 @@ class Plot(Base):
         """
         Return a dataframe cross-tabulating values from feature ``x`` and ``y``.
         """
+        Base = self
         return pd.crosstab(Base.train[x], Base.train[y])
 
     def bar(self, x, y):
         """
         Bar plot ``x`` across ``y`` feature values.
         """
+        Base = self
         plt.figure(figsize=(8,4))
         sns.barplot(x, y, data=Base.train)
         plt.xlabel(x, fontsize=12)
@@ -40,6 +42,7 @@ class Plot(Base):
         """
         Stripplot plot ``x`` across ``y`` feature values.
         """
+        Base = self
         plt.figure(figsize=(8,4))
         sns.stripplot(x, y, hue=Base.target, data=Base.train, jitter=True)
         plt.xlabel(x, fontsize=12)
@@ -50,6 +53,7 @@ class Plot(Base):
         """
         Plot multiple feature distribution histogram plots for all numeric features. This helps understand skew of distribution from normal to quickly and relatively identify outliers in the dataset.
         """
+        Base = self
         Base.data_n()
         features = len(Base.train_n.columns)
         plt.figure()
@@ -59,6 +63,7 @@ class Plot(Base):
         """
         Plot correlation matrix heatmap for numerical features of the training dataset. Use this plot to understand if certain features are duplicate, are of low importance, or possibly high importance for our model.
         """
+        Base = self
         Base.data_n()
         corr = Base.train_n.corr()
         features = Base.train_n.shape[1]
@@ -72,6 +77,7 @@ class Plot(Base):
         """
         Plot ordinal features (categorical numeric) using Violin plot against target feature. Use this to determine outliers within ordinal features spread across associated target feature values.
         """
+        Base = self
         Base.data_n()
         plt.figure(figsize=(8,4))
         sns.violinplot(x=Base.target, y=y, data=Base.train_n)
@@ -83,6 +89,7 @@ class Plot(Base):
         """
         Plot continuous features (numeric) using scatter plot. Use this to determine outliers within continuous features.
         """
+        Base = self
         Base.data_n()
         plt.figure(figsize=(8,6))
         plt.scatter(range(Base.train_n.shape[0]), np.sort(Base.train_n[y].values))
@@ -94,6 +101,7 @@ class Plot(Base):
         """
         Plot ranking among accuracy offered by various models based on our datasets.
         """
+        Base = self
         plt.xlabel('Accuracy')
         plt.title('Classifier Accuracy')
 
@@ -101,6 +109,7 @@ class Plot(Base):
         sns.barplot(x='Accuracy', y='Classifier', data=Base.model_ranking, color="b");
 
     def _create_feature_map(self, features):
+      Base = self
         outfile = open(Base._config['outpath'] + 'xgb.fmap', 'w')
         i = 0
         for feat in features:
@@ -110,6 +119,7 @@ class Plot(Base):
         outfile.close()
 
     def _plot_importance(self, feature, importance):
+      Base = self
         ranking = pd.DataFrame({'Feature': feature,
                                'Importance': importance})
         ranking = ranking.sort_values(by='Importance', ascending=False)
@@ -128,6 +138,7 @@ class Plot(Base):
         """
         Plot importance of features based on ExtraTreesClassifier.
         """
+        Base = self
         Base.data_n()
         X = Base.train_n
         y = X[Base.target].copy()
@@ -140,6 +151,7 @@ class Plot(Base):
         """
         Plot importance of features based on XGBoost.
         """
+        Base = self
         Base.data_n()
         X = Base.train_n
         X = X.drop([Base.target], axis=1)
