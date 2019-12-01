@@ -21,6 +21,7 @@ class Xgb(Base):
         """
         Calculate the accuracy of an XGBoost model based on number of correct labels in prediction.
         """
+        Base = self
         train_preds = Base.xgb_model.predict(Base.train_X)
         rounded_preds = np.round(train_preds).astype(int).flatten()
         correct = np.where(rounded_preds == Base.train_y)[0]
@@ -36,6 +37,7 @@ class Xgb(Base):
         """
         Tune XGBoost hyper-parameters by selecting from permutations of values from the ``select_params`` dictionary. Remaining parameters with single values are specified by the ``fixed_params`` dictionary. Returns a dataframe with ranking of ``select_params`` items.
         """
+        Base = self
         optimized_GBM = GridSearchCV(xgb.XGBClassifier(**fixed_params), select_params, scoring = 'accuracy', cv = 5, n_jobs = -1)
         optimized_GBM.fit(Base.train_X, Base.train_y)
         df = pd.DataFrame(optimized_GBM.cv_results_)[['rank_test_score', 'params']].sort_values(by='rank_test_score')
@@ -46,6 +48,7 @@ class Xgb(Base):
         """
         Calculate the Cross-Validation (CV) score for XGBoost model based on ``grid_params`` parameters. Sets xgb.cv_results variable to the resulting dataframe.
         """
+        Base = self
         xgdmat = xgb.DMatrix(Base.train_X, Base.train_y)
         self.cv_results = xgb.cv(
             params = grid_params, dtrain = xgdmat,
@@ -57,30 +60,35 @@ class Xgb(Base):
         """
         Sets Base.xgb_params to ``params`` dictionary.
         """
+        Base = self
         Base.xgb_params = params
 
     def classifier(self):
         """
         Creates the XGBoost Classifier with Base.xgb_params dictionary of model hyper-parameters.
         """
+        Base = self
         self.clf = xgb.XGBClassifier(**Base.xgb_params)
 
     def fit(self):
         """
         Sets Base.xgb_model with trained XGBoost model.
         """
+        Base = self
         Base.xgb_model = self.clf.fit(Base.train_X, Base.train_y)
 
     def predict(self):
         """
         Sets xgb.predictions with predictions from the XGBoost model.
         """
+        Base = self
         self.predictions = Base.xgb_model.predict(Base.test_X)
 
     def feature_selection(self):
         """
         Returns threshold and accuracy for ``n`` number of features.
         """
+        Base = self
         Base.data_n()
         X = Base.train_n.drop([Base.target], axis=1)
         Y = Base.train[Base.target]
