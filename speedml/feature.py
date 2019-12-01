@@ -18,6 +18,7 @@ class Feature(Base):
         """
         Drop one or more list of strings naming ``features`` from train and test datasets.
         """
+        Base =self
         start = Base.train.shape[1]
 
         Base.train = Base.train.drop(features, axis=1)
@@ -31,6 +32,7 @@ class Feature(Base):
         """
         Replace empty values in the entire dataframe with median value for numerical features and most common values for text features.
         """
+        Base =self
         start = Base.train.isnull().sum().sum()
 
         Base.test[Base.target] = -1
@@ -48,6 +50,7 @@ class Feature(Base):
         """
         Convert values for categorical feature ``a`` using ``data`` dictionary. Use when number of categories are limited otherwise use labels.
         """
+        Base =self
         Base.train[a] = Base.train[a].apply(lambda x: data[x])
         Base.test[a] = Base.test[a].apply(lambda x: data[x])
 
@@ -55,6 +58,7 @@ class Feature(Base):
         """
         Fills empty or null values in ``a`` feature name with ``new`` string value.
         """
+        Base =self
         start = Base.train[a].isnull().sum() + Base.test[a].isnull().sum()
 
         Base.train[a] = Base.train[a].fillna(new)
@@ -67,6 +71,7 @@ class Feature(Base):
         """
         In feature ``a`` values ``match`` string or list of strings and replace with a ``new`` string.
         """
+        Base =self
         if type(match) is str:
             # [TODO] What is the performance cost of message ops?
             start = Base.train[Base.train[a] == match][a].shape[0] + Base.test[Base.test[a] == match][a].shape[0]
@@ -85,6 +90,7 @@ class Feature(Base):
         """
         Fix outliers for ``lower`` or ``upper`` or both percentile of values within ``a`` feature.
         """
+        Base =self
         if upper:
             upper_value = np.percentile(Base.train[a].values, upper)
             change = Base.train.loc[Base.train[a] > upper_value, a].shape[0]
@@ -100,6 +106,7 @@ class Feature(Base):
         return message
 
     def _density_by_feature(self, a):
+        Base =self
         vals = Base.train[a].value_counts()
         dvals = vals.to_dict()
         Base.train[a + '_density'] = Base.train[a].apply(lambda x: dvals.get(x, vals.min()))
@@ -109,6 +116,7 @@ class Feature(Base):
         """
         Create new feature named ``a`` feature name + suffix '_density', based on density or value_counts for each unique value in ``a`` feature specified as a string or multiple features as a list of strings.
         """
+        Base =self
         if isinstance(a, str):
             self._density_by_feature(a)
 
@@ -120,6 +128,7 @@ class Feature(Base):
         """
         Update ``a`` numeric feature by adding ``num`` number to each values.
         """
+        Base =self
         Base.train[a] = Base.train[a] + num
         Base.test[a] = Base.test[a] + num
 
@@ -127,6 +136,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature by adding ``a`` + ``b`` feature values.
         """
+        Base =self
         Base.train[new] = Base.train[a] + Base.train[b]
         Base.test[new] = Base.test[a] + Base.test[b]
 
@@ -134,6 +144,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature by subtracting ``a`` - ``b`` feature values.
         """
+        Base =self
         Base.train[new] = Base.train[a] - Base.train[b]
         Base.test[new] = Base.test[a] - Base.test[b]
 
@@ -141,6 +152,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature by multiplying ``a`` * ``b`` feature values.
         """
+        Base =self
         Base.train[new] = Base.train[a] * Base.train[b]
         Base.test[new] = Base.test[a] * Base.test[b]
 
@@ -148,6 +160,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature by dividing ``a`` / ``b`` feature values. Replace division-by-zero with zero values.
         """
+        Base =self
         Base.train[new] = Base.train[a] / Base.train[b]
         Base.test[new] = Base.test[a] / Base.test[b]
         # Histograms require finite values
@@ -158,6 +171,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature by rounding ``a`` feature value to ``precision`` decimal places.
         """
+        Base =self
         Base.train[new] = round(Base.train[a], precision)
         Base.test[new] = round(Base.test[a], precision)
 
@@ -165,6 +179,7 @@ class Feature(Base):
         """
         Create ``new`` text feature by concatenating ``a`` and ``b`` text feature values, using ``sep`` separator.
         """
+        Base =self
         Base.train[new] = Base.train[a].astype(str) + sep + Base.train[b].astype(str)
         Base.test[new] = Base.test[a].astype(str) + sep + Base.test[b].astype(str)
 
@@ -172,6 +187,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature based on length or item count from ``a`` feature containing list object as values.
         """
+        Base =self
         Base.train[new] = Base.train[a].apply(len)
         Base.test[new] = Base.test[a].apply(len)
 
@@ -179,6 +195,7 @@ class Feature(Base):
         """
         Create ``new`` numeric feature based on length or word count from ``a`` feature containing free-form text.
         """
+        Base =self
         Base.train[new] = Base.train[a].apply(lambda x: len(x.split(" ")))
         Base.test[new] = Base.test[a].apply(lambda x: len(x.split(" ")))
 
@@ -193,6 +210,7 @@ class Feature(Base):
         """
         Match ``regex`` regular expression with ``a`` text feature values to update ``a`` feature with matching text if ``new`` = None. Otherwise create ``new`` feature based on matching text.
         """
+        Base =self
         Base.train[new if new else a] = Base.train[a].apply(lambda x: self._regex_text(regex=regex, text=x))
         Base.test[new if new else a] = Base.test[a].apply(lambda x: self._regex_text(regex=regex, text=x))
 
@@ -200,6 +218,7 @@ class Feature(Base):
         """
         Generate numerical labels replacing text values from list of categorical ``features``.
         """
+        Base =self
         Base.test[Base.target] = -1
         combine = Base.train.append(Base.test)
 
