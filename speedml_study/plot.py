@@ -109,7 +109,7 @@ class Plot(Base):
         sns.barplot(x='Accuracy', y='Classifier', data=Base.model_ranking, color="b");
 
     def _create_feature_map(self, features):
-      Base = self
+        Base = self
         outfile = open(Base._config['outpath'] + 'xgb.fmap', 'w')
         i = 0
         for feat in features:
@@ -119,7 +119,7 @@ class Plot(Base):
         outfile.close()
 
     def _plot_importance(self, feature, importance):
-      Base = self
+        Base = self
         ranking = pd.DataFrame({'Feature': feature,
                                'Importance': importance})
         ranking = ranking.sort_values(by='Importance', ascending=False)
