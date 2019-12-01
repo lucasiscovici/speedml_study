@@ -26,43 +26,20 @@ class Speedml(Base):
         """
         Open datasets ``train`` and ``test`` as CSV or JSON files and store in pandas DataFrames ``Base.train`` and ``Base.test``. Set ``Base.target`` and ``Base.uid`` values based on parameters. Initialize ``Plot``, ``Feature``, and ``Xgb`` components.
         """
+        super().__init__(train,test,target, uid)
         self._setup_environment()
-
-        Base.target = target
-
-        # TODO: Add more file formats supported by pandas.read_
-        if train.endswith('.csv'):
-            Base.train = pd.read_csv(train)
-            Base.test = pd.read_csv(test)
-
-        if train.endswith('.json'):
-            Base.train = pd.read_json(train)
-            Base.test = pd.read_json(test)
-
-        if not Base.train.empty and not Base.test.empty:
-            if uid:
-                Base.uid = Base.test.pop(uid)
-                Base.train = Base.train.drop([uid], axis=1)
-
-            self.plot = Plot()
-            self.feature = Feature()
-            self.xgb = Xgb()
-            self.model = Model()
-
-            self.np = np
-            self.pd = pd
-        else:
-            print('ERROR: SpeedML can only process .csv and .json file extensions.')
 
     def configure(self, option=None, value=None):
         """
         Configure Speedml defaults with ``option`` configuration parameter, ``value`` setting. When method is called without parameters it simply returns the current config dictionary, otherwise returns the updated configuration.
         """
+        Base =self
         if option and value:
             Base._config[option] = value
         return Base._config
 
     def _setup_environment(self):
+        Base = self
         Base._config = {}
         # Used by data out path 'internally' within Speedml methods
         Base._config['outpath'] = 'output/'
@@ -100,6 +77,7 @@ class Speedml(Base):
         """
         Performs speed exploratory data analysis (EDA) on the current state of datasets. Returns metrics and recommendations as a dataframe. Progressively hides metrics as they achieve workflow completion goals or meet the configured defaults and thresholds.
         """
+        Base = self
         Base.data_n()
 
         eda_metrics = []
@@ -250,6 +228,7 @@ class Speedml(Base):
         """
         Print shape (samples, features) of train, test datasets and number of numerical features in each dataset.
         """
+        Base=self
         Base.data_n()
         message = 'train {} | test {}'
         return message.format(Base.train.shape, Base.test.shape)
