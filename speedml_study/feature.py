@@ -14,11 +14,12 @@ from sklearn.preprocessing import LabelEncoder
 import re
 
 class Feature(Base):
-    def drop(self, features):
+    def drop(self, cols):
         """
         Drop one or more list of strings naming ``features`` from train and test datasets.
         """
         Base =self
+        features= cols
         start = Base.train.shape[1]
 
         Base.train = Base.train.drop(features, axis=1)
