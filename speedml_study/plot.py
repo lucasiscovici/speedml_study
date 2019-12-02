@@ -83,7 +83,7 @@ class Plot(Base):
         sns.violinplot(x=Base.target, y=y, data=Base.train_n)
         plt.xlabel(Base.target, fontsize=12)
         plt.ylabel(y, fontsize=12)
-        plt.show();
+        #plt.show();
 
     def continuous(self, y):
         """
@@ -95,7 +95,7 @@ class Plot(Base):
         plt.scatter(range(Base.train_n.shape[0]), np.sort(Base.train_n[y].values))
         plt.xlabel('Samples', fontsize=12)
         plt.ylabel(y, fontsize=12)
-        plt.show();
+        #plt.show();
 
     def model_ranks(self):
         """
@@ -132,7 +132,7 @@ class Plot(Base):
         ax.invert_yaxis()
         ax.set_xlabel('Importance')
         ax.set_title('Feature Importance')
-        plt.show()
+        #plt.show()
 
     def importance(self):
         """
