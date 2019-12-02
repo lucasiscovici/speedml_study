@@ -36,7 +36,7 @@ class Plot(Base):
         sns.barplot(x, y, data=Base.train)
         plt.xlabel(x, fontsize=12)
         plt.ylabel(y, fontsize=12)
-        plt.show();
+        #plt.show();
 
     def strip(self, x, y):
         """
@@ -47,7 +47,7 @@ class Plot(Base):
         sns.stripplot(x, y, hue=Base.target, data=Base.train, jitter=True)
         plt.xlabel(x, fontsize=12)
         plt.ylabel(y, fontsize=12)
-        plt.show();
+        #plt.show();
 
     def distribute(self):
         """
