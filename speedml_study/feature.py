@@ -46,11 +46,14 @@ class Feature(Base):
         message = 'Imputed {} empty values to {}.'
         return message.format(start, end)
 
-    def mapping(self, a, data):
+    def mapping(self, **kwargs):
         """
         Convert values for categorical feature ``a`` using ``data`` dictionary. Use when number of categories are limited otherwise use labels.
+        kwargs=dict(COLNAME=dict(VALUE_TO_REPLACE=REPLACE_VALUE))
         """
         Base =self
+        a=list(kwargs.keys())[0]
+        data=list(kwargs.values())[0]
         Base.train[a] = Base.train[a].apply(lambda x: data[x])
         Base.test[a] = Base.test[a].apply(lambda x: data[x])
 
@@ -67,10 +70,12 @@ class Feature(Base):
         message = 'Filled {} null values across test and train datasets.'
         return message.format(start)
 
-    def replace(self, a, match, new):
+    def replace(self, col, match, newValue): # a, match, newValue
         """
-        In feature ``a`` values ``match`` string or list of strings and replace with a ``new`` string.
+        In feature ``col`` values ``match`` string or list of strings and replace with a ``newValue`` string.
         """
+        a=col
+        new=newValue
         Base =self
         if type(match) is str:
             # [TODO] What is the performance cost of message ops?
@@ -86,11 +91,12 @@ class Feature(Base):
 
         return message
 
-    def outliers(self, a, lower = None, upper = None):
+    def outliers(self, col, lower = None, upper = None):
         """
-        Fix outliers for ``lower`` or ``upper`` or both percentile of values within ``a`` feature.
+        Fix outliers for ``lower`` or ``upper`` or both percentile of values within ``col`` feature.
         """
         Base =self
+        a=col
         if upper:
             upper_value = np.percentile(Base.train[a].values, upper)
             change = Base.train.loc[Base.train[a] > upper_value, a].shape[0]
@@ -105,18 +111,20 @@ class Feature(Base):
 
         return message
 
-    def _density_by_feature(self, a):
+    def _density_by_feature(self, col):
         Base =self
+        a=col
         vals = Base.train[a].value_counts()
         dvals = vals.to_dict()
         Base.train[a + '_density'] = Base.train[a].apply(lambda x: dvals.get(x, vals.min()))
         Base.test[a + '_density'] = Base.test[a].apply(lambda x: dvals.get(x, vals.min()))
 
-    def density(self, a):
+    def density(self, col):
         """
-        Create new feature named ``a`` feature name + suffix '_density', based on density or value_counts for each unique value in ``a`` feature specified as a string or multiple features as a list of strings.
+        Create new feature named ``col`` feature name + suffix '_density', based on density or value_counts for each unique value in ``a`` feature specified as a string or multiple features as a list of strings.
         """
         Base =self
+        a=col
         if isinstance(a, str):
             self._density_by_feature(a)
 
@@ -124,78 +132,92 @@ class Feature(Base):
             for feature in a:
                 self._density_by_feature(feature)
 
-    def add(self, a, num):
+    def add(self, col, num):
         """
-        Update ``a`` numeric feature by adding ``num`` number to each values.
+        Update ``col`` numeric feature by adding ``num`` number to each values.
         """
         Base =self
+        a=col
         Base.train[a] = Base.train[a] + num
         Base.test[a] = Base.test[a] + num
 
-    def sum(self, new, a, b):
+    def sum(self, *args ,newCol):
         """
-        Create ``new`` numeric feature by adding ``a`` + ``b`` feature values.
+        Create ``newCol`` numeric feature by adding argsfeature values.
         """
         Base =self
-        Base.train[new] = Base.train[a] + Base.train[b]
-        Base.test[new] = Base.test[a] + Base.test[b]
+        Base.train[newCol] = Base.train[args].sum(axis=1)
+        Base.test[newCol] = Base.test[args].sum(axis=1)
 
-    def diff(self, new, a, b):
+    def diff(self, *args ,newCol):
         """
-        Create ``new`` numeric feature by subtracting ``a`` - ``b`` feature values.
+        Create ``newCol`` numeric feature by subtracting args feature values.
         """
         Base =self
-        Base.train[new] = Base.train[a] - Base.train[b]
-        Base.test[new] = Base.test[a] - Base.test[b]
+        a=args[0]
+        args=args[1:]
+        Base.train[newCol] = Base.train[a] - Base.train[args].sum(axis=1)
+        Base.test[newCol] = Base.test[a] - Base.test[args].sum(axis=1)
 
-    def product(self, new, a, b):
+    def product(self,  *args ,newCol):
         """
-        Create ``new`` numeric feature by multiplying ``a`` * ``b`` feature values.
+        Create ``newCol`` numeric feature by multiplying args feature values.
         """
         Base =self
-        Base.train[new] = Base.train[a] * Base.train[b]
-        Base.test[new] = Base.test[a] * Base.test[b]
+        Base.train[newCol] = Base.train[args].prod(axis=1)
+        Base.test[newCol] = Base.test[args].prod(axis=1)
 
-    def divide(self, new, a, b):
+    def divide(self, *args ,newCol):
         """
-        Create ``new`` numeric feature by dividing ``a`` / ``b`` feature values. Replace division-by-zero with zero values.
+        Create ``newCol`` numeric feature by dividing args feature values. Replace division-by-zero with zero values.
         """
         Base =self
-        Base.train[new] = Base.train[a] / Base.train[b]
-        Base.test[new] = Base.test[a] / Base.test[b]
+        new=newCol
+        a=args[0]
+        args=args[1:]
+        Base.train[new] = Base.train[a] / Base.train[args].prod(axis=1)
+        Base.test[new] = Base.test[a] / Base.test[b].prod(axis=1)
         # Histograms require finite values
         Base.train[new] = Base.train[new].replace([np.inf, -np.inf], 0)
         Base.test[new] = Base.test[new].replace([np.inf, -np.inf], 0)
 
-    def round(self, new, a, precision):
+    def round(self, *args, newCol, precision=2):
         """
-        Create ``new`` numeric feature by rounding ``a`` feature value to ``precision`` decimal places.
+        Create ``newCol`` numeric feature by rounding args features value to ``precision`` decimal places.
         """
         Base =self
-        Base.train[new] = round(Base.train[a], precision)
-        Base.test[new] = round(Base.test[a], precision)
+        new=newCol
+        Base.train[new] = round(Base.train[args], precision)
+        Base.test[new] = round(Base.test[args], precision)
 
-    def concat(self, new, a, sep, b):
+    def concat(self, *args, newCol, sep=""):
         """
         Create ``new`` text feature by concatenating ``a`` and ``b`` text feature values, using ``sep`` separator.
         """
         Base =self
-        Base.train[new] = Base.train[a].astype(str) + sep + Base.train[b].astype(str)
-        Base.test[new] = Base.test[a].astype(str) + sep + Base.test[b].astype(str)
+        new=newCol
+        a=args[0]
+        args=args[1:]
+        Base.train[new] = Base.train[a].str.cat(Base.train[args].astype(str),sep=sep)
+        Base.test[new] = Base.test[a].str.cat(Base.test[args].astype(str),sep=sep)
 
-    def list_len(self, new, a):
+    def list_len(self, newCol, col):
         """
         Create ``new`` numeric feature based on length or item count from ``a`` feature containing list object as values.
         """
         Base =self
+        new=newCol
+        a=col
         Base.train[new] = Base.train[a].apply(len)
         Base.test[new] = Base.test[a].apply(len)
 
-    def word_count(self, new, a):
+    def word_count(self, newCol, col):
         """
         Create ``new`` numeric feature based on length or word count from ``a`` feature containing free-form text.
         """
         Base =self
+        new=newCol
+        a=col
         Base.train[new] = Base.train[a].apply(lambda x: len(x.split(" ")))
         Base.test[new] = Base.test[a].apply(lambda x: len(x.split(" ")))
 
@@ -206,19 +228,22 @@ class Feature(Base):
             return regex_search.group(1)
         return ""
 
-    def extract(self, a, regex, new=None):
+    def extract(self, col, regex, newCol=None):
         """
         Match ``regex`` regular expression with ``a`` text feature values to update ``a`` feature with matching text if ``new`` = None. Otherwise create ``new`` feature based on matching text.
         """
         Base =self
+        a=col
+        new=newCol
         Base.train[new if new else a] = Base.train[a].apply(lambda x: self._regex_text(regex=regex, text=x))
         Base.test[new if new else a] = Base.test[a].apply(lambda x: self._regex_text(regex=regex, text=x))
 
-    def labels(self, features):
+    def labels(self, cols):
         """
         Generate numerical labels replacing text values from list of categorical ``features``.
         """
         Base =self
+        features=cols
         Base.test[Base.target] = -1
         combine = Base.train.append(Base.test)
 
