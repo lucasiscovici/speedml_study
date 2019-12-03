@@ -28,6 +28,11 @@ class Speedml(Base):
         """
         super().__init__(train,test,target, uid)
         self._setup_environment()
+        self._feature=Feature(self)
+        self._plot=Plot(self)
+        self._model=Model(self)
+        self._xgb=Xgb(self)
+        
 
     def configure(self, option=None, value=None):
         """
@@ -252,16 +257,16 @@ class Speedml(Base):
       
     @property
     def feature(self): 
-        return Feature(self)
+        return self._feature
       
     @property
     def plot(self): 
-        return Plot(self)
+        return self._plot
      
     @property
     def model(self): 
-        return Model(self)
+        return self._model
       
     @property
     def xgb(self):
-        return Xgb(self)
+        return self._xgb
