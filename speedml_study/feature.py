@@ -149,6 +149,8 @@ class Feature(Base):
         Create ``newCol`` numeric feature by adding argsfeature values.
         """
         Base =self
+        print(Base.train)
+        print(args)
         Base.train[newCol] = Base.train[args].sum(axis=1)
         Base.test[newCol] = Base.test[args].sum(axis=1)
 
