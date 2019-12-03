@@ -58,11 +58,13 @@ class Feature(Base):
         Base.train[a] = Base.train[a].apply(lambda x: data[x])
         Base.test[a] = Base.test[a].apply(lambda x: data[x])
 
-    def fillna(self, a, new):
+    def fillna(self, col, newValue):
         """
         Fills empty or null values in ``a`` feature name with ``new`` string value.
         """
         Base =self
+        a=col
+        new=newValue
         start = Base.train[a].isnull().sum() + Base.test[a].isnull().sum()
 
         Base.train[a] = Base.train[a].fillna(new)
