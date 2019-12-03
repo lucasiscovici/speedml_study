@@ -4,10 +4,11 @@ class Base(object):
     def __init__(self, train=None, test=None, target=None, uid=None):
         from . import Speedml
         if test is None and target is None and isinstance(train,Speedml):
-            train = train.train
-            test  = train.test
-            target = train.target
-            uid = train.uid if hasattr(train,"uid") else None
+            train_=train
+            train = train_.train
+            test  = train_.test
+            target = train_.target
+            uid = train_.uid if hasattr(train_,"uid") else None
         Base=self
         Base.target = target
         if isinstance(train,str):
