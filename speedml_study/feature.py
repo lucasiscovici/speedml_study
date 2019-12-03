@@ -149,8 +149,7 @@ class Feature(Base):
         Create ``newCol`` numeric feature by adding argsfeature values.
         """
         Base =self
-        print(Base.train)
-        print(args)
+        args=list(args)
         Base.train[newCol] = Base.train[args].sum(axis=1)
         Base.test[newCol] = Base.test[args].sum(axis=1)
 
@@ -159,6 +158,7 @@ class Feature(Base):
         Create ``newCol`` numeric feature by subtracting args feature values.
         """
         Base =self
+        args=list(args)
         a=args[0]
         args=args[1:]
         Base.train[newCol] = Base.train[a] - Base.train[args].sum(axis=1)
@@ -169,6 +169,7 @@ class Feature(Base):
         Create ``newCol`` numeric feature by multiplying args feature values.
         """
         Base =self
+        args=list(args)
         Base.train[newCol] = Base.train[args].prod(axis=1)
         Base.test[newCol] = Base.test[args].prod(axis=1)
 
@@ -178,6 +179,7 @@ class Feature(Base):
         """
         Base =self
         new=newCol
+        args=list(args)
         a=args[0]
         args=args[1:]
         Base.train[new] = Base.train[a] / Base.train[args].prod(axis=1)
@@ -201,6 +203,7 @@ class Feature(Base):
         """
         Base =self
         new=newCol
+        args=list(args)
         a=args[0]
         args=args[1:]
         Base.train[new] = Base.train[a].str.cat(Base.train[args].astype(str),sep=sep)
