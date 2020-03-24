@@ -125,7 +125,7 @@ class Speedml(Base):
                                   'Aim for 100% numerical.'])
 
         numerical_features = Base.train_n.columns.values
-
+        target_analysis=["Nothing","Nothing"]
         if numerical_features != []:
             high_cardinality_num = []
             categorical_num = []
